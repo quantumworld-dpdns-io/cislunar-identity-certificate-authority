@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cislunar-ca.name" . }}-engine
+  labels:
+    app: ca-engine
+    {{- include "cislunar-ca.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: ca-engine
+  ports:
+    - port: {{ .Values.ca-engine.service.port }}
+      targetPort: grpc
+      name: grpc
+  type: ClusterIP
