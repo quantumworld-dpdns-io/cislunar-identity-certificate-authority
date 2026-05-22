@@ -1,0 +1,35 @@
+name: Python CI
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ["src/python/**", ".github/workflows/ci-python.yml"]
+  pull_request:
+    branches: [main]
+    paths: ["src/python/**"]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        working-directory: src/python
+        run: |
+          pip install -e ".[dev]"
+          pip install ruff mypy pytest pytest-cov
+      - name: Lint
+        working-directory: src/python
+        run: ruff check .
+      - name: Type check
+        working-directory: src/python
+        run: mypy cislunar_ca
+      - name: Test
+        working-directory: src/python
+        run: pytest -v --cov=cislunar_ca
+      - name: Security
+        working-directory: src/python
+        run: pip install bandit && bandit -r cislunar_ca
