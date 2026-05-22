@@ -1,0 +1,46 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+      - id: detect-private-key
+
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.2.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.6.27
+    hooks:
+      - id: actionlint
+
+  - repo: local
+    hooks:
+      - id: rust-fmt
+        name: Rust Format
+        language: system
+        files: \.rs$
+        entry: cargo fmt --manifest-path src/rust/Cargo.toml
+        pass_filenames: false
+
+      - id: go-vet
+        name: Go Vet
+        language: system
+        files: \.go$
+        entry: go vet ./...
+        pass_filenames: false
+        args: ["src/go"]
+
+      - id: ruff
+        name: Python Lint
+        language: system
+        files: \.py$
+        entry: ruff check
+        args: ["src/python"]
+        pass_filenames: false
