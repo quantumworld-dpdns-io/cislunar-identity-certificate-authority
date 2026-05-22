@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "ca-api"
+    static_configs:
+      - targets: ["ca-api:8080"]
+    metrics_path: "/api/v1/metrics"
+
+  - job_name: "ca-engine"
+    static_configs:
+      - targets: ["ca-engine:50051"]
+    metrics_path: "/metrics"
+
+  - job_name: "ca-ai"
+    static_configs:
+      - targets: ["ca-ai:8000"]
+    metrics_path: "/metrics"
