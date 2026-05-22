@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate changelog
+        id: changelog
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const response = await github.rest.repos.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+            const commits = response.data.map(c => ({
+              message: c.commit.message.split('\n')[0],
+              sha: c.sha.substring(0, 7),
+              author: c.commit.author.name,
+            }));
+            const changelog = commits.map(c => `- ${c.message} (${c.sha})`).join('\n');
+            core.setOutput('changelog', changelog);
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: |
+            ## Release ${{ github.ref_name }}
+
+            ### Changes
+            ${{ steps.changelog.outputs.changelog }}
+
+            ### Docker Images
+            - `ghcr.io/${{ github.repository }}/engine:${{ github.ref_name }}`
+            - `ghcr.io/${{ github.repository }}/api:${{ github.ref_name }}`
+            - `ghcr.io/${{ github.repository }}/ai:${{ github.ref_name }}`
+          generate_release_notes: true

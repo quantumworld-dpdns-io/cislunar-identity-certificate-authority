@@ -1,0 +1,91 @@
+syntax = "proto3";
+package ca;
+
+service CA {
+  rpc IssueCertificate(IssueRequest) returns (IssueResponse);
+  rpc GetCertificate(GetRequest) returns (GetResponse);
+  rpc ListCertificates(ListRequest) returns (ListResponse);
+  rpc RevokeCertificate(RevokeRequest) returns (RevokeResponse);
+  rpc CheckOCSP(OCSPRequest) returns (OCSPResponse);
+  rpc HealthCheck(HealthRequest) returns (HealthResponse);
+}
+
+message IssueRequest {
+  string subject = 1;
+  repeated string subject_alt_names = 2;
+  string key_type = 3;
+  uint32 validity_days = 4;
+  string profile = 5;
+}
+
+message IssueResponse {
+  string serial_number = 1;
+  string subject = 2;
+  string fingerprint = 3;
+  string issued_at = 4;
+  string expires_at = 5;
+}
+
+message GetRequest {
+  string serial_number = 1;
+}
+
+message GetResponse {
+  string serial_number = 1;
+  string subject = 2;
+  string issuer = 3;
+  string status = 4;
+  string pem = 5;
+  string fingerprint = 6;
+  string issued_at = 7;
+  string expires_at = 8;
+  string ca_type = 9;
+}
+
+message ListRequest {
+  string status = 1;
+  uint32 limit = 2;
+  uint32 offset = 3;
+}
+
+message ListResponse {
+  repeated CertificateSummary certificates = 1;
+}
+
+message CertificateSummary {
+  string serial_number = 1;
+  string subject = 2;
+  string status = 3;
+  string expires_at = 4;
+}
+
+message RevokeRequest {
+  string serial_number = 1;
+  string reason = 2;
+}
+
+message RevokeResponse {
+  bool success = 1;
+}
+
+message OCSPRequest {
+  string serial_number = 1;
+  string issuer_hash = 2;
+}
+
+message OCSPResponse {
+  string serial_number = 1;
+  string status = 2;
+  string produced_at = 3;
+  string this_update = 4;
+  string next_update = 5;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  string status = 1;
+  string version = 2;
+  uint64 uptime_seconds = 3;
+  uint64 certificate_count = 4;
+}

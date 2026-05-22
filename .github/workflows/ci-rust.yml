@@ -1,0 +1,38 @@
+name: Rust CI
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ["src/rust/**", "Cargo.toml", ".github/workflows/ci-rust.yml"]
+  pull_request:
+    branches: [main]
+    paths: ["src/rust/**", "Cargo.toml"]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Format check
+        working-directory: src/rust
+        run: cargo fmt --check
+      - name: Clippy
+        working-directory: src/rust
+        run: cargo clippy --workspace -- -D warnings
+      - name: Build
+        working-directory: src/rust
+        run: cargo build --workspace
+      - name: Test
+        working-directory: src/rust
+        run: cargo test --workspace
+      - name: Audit
+        uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

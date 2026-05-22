@@ -1,0 +1,93 @@
+version: "3.9"
+
+services:
+  ca-engine:
+    build:
+      context: .
+      dockerfile: docker/rust/Dockerfile
+    ports:
+      - "50051:50051"
+    volumes:
+      - ca-data:/data/ca
+    environment:
+      - RUST_LOG=info
+      - CA_STORAGE_PATH=/data/ca
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=localhost:50051"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  ca-api:
+    build:
+      context: .
+      dockerfile: docker/go/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      ca-engine:
+        condition: service_healthy
+    environment:
+      - CA_GRPC_ADDR=ca-engine:50051
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  ca-ai:
+    build:
+      context: .
+      dockerfile: docker/python/Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      ca-api:
+        condition: service_healthy
+    environment:
+      - CA_API_ADDR=http://ca-api:8080
+      - OLLAMA_HOST=http://ollama:11434
+    profiles:
+      - ai
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    profiles:
+      - ai
+
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma-data:/chroma/chroma
+    profiles:
+      - ai
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    profiles:
+      - monitoring
+
+volumes:
+  ca-data:
+  ollama-models:
+  chroma-data:
+  grafana-data:

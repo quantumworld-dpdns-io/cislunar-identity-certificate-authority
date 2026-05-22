@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cislunar-ca.name" . }}-api
+  labels:
+    app: ca-api
+    {{- include "cislunar-ca.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.ca-api.replicaCount }}
+  selector:
+    matchLabels:
+      app: ca-api
+  template:
+    metadata:
+      labels:
+        app: ca-api
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.ca-api.image.repository }}:{{ .Values.ca-api.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.ca-api.service.port }}
+              name: http
+          env:
+            - name: CA_GRPC_ADDR
+              value: "{{ include "cislunar-ca.name" . }}-engine:{{ .Values.ca-engine.service.port }}"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            {{- toYaml .Values.ca-api.resources | nindent 12 }}

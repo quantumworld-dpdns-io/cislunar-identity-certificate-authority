@@ -1,0 +1,39 @@
+[project]
+name = "cislunar-ca"
+version = "0.1.0"
+description = "Cislunar Identity Certificate Authority - Python AI/ML Integration Layer"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "httpx>=0.27",
+    "pydantic>=2.5",
+    "pydantic-settings>=2.1",
+    "structlog>=24.1",
+    "opentelemetry-api>=1.24",
+    "opentelemetry-sdk>=1.24",
+    "opentelemetry-exporter-otlp>=1.24",
+    "prometheus-client>=0.19",
+    "apscheduler>=3.10",
+    "duckdb>=1.0",
+    "pyarrow>=17.0",
+    "chromadb>=0.5",
+    "lancedb>=0.9",
+    "ollama>=0.3",
+    "weave>=0.51",
+    "grpcio>=1.62",
+    "grpcio-tools>=1.62",
+    "click>=8.1",
+    "rich>=13.7",
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "sentence-transformers>=2.5",
+]
+
+[project.scripts]
+cislunar-ca = "cislunar_ca.cli.main:cli"
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"

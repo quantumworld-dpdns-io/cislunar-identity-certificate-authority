@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cislunar-ca.name" . }}-engine
+  labels:
+    app: ca-engine
+    {{- include "cislunar-ca.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.ca-engine.replicaCount }}
+  selector:
+    matchLabels:
+      app: ca-engine
+  template:
+    metadata:
+      labels:
+        app: ca-engine
+    spec:
+      containers:
+        - name: engine
+          image: "{{ .Values.ca-engine.image.repository }}:{{ .Values.ca-engine.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.ca-engine.service.port }}
+              name: grpc
+          livenessProbe:
+            grpc:
+              port: {{ .Values.ca-engine.service.port }}
+            initialDelaySeconds: 10
+          readinessProbe:
+            grpc:
+              port: {{ .Values.ca-engine.service.port }}
+            initialDelaySeconds: 5
+          resources:
+            {{- toYaml .Values.ca-engine.resources | nindent 12 }}
+          volumeMounts:
+            - name: storage
+              mountPath: /data/ca
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: {{ include "cislunar-ca.name" . }}-engine-pvc

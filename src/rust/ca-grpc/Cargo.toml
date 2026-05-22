@@ -1,0 +1,22 @@
+[package]
+name = "ca-grpc"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "ca-grpc"
+path = "src/main.rs"
+
+[dependencies]
+ca-types = { path = "../ca-types" }
+ca-crypto = { path = "../ca-crypto" }
+ca-core = { path = "../ca-core" }
+tonic.workspace = true
+prost.workspace = true
+prost-types.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+anyhow.workspace = true
+serde.workspace = true

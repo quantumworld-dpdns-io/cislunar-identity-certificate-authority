@@ -1,0 +1,19 @@
+organization: "Cislunar Certificate Authority"
+country: "US"
+ca_key_type: "ecdsa-p256"
+default_validity_days: 365
+crl_validity_days: 7
+enable_pqc: false
+enable_tee: false
+max_certificates_per_identity: 100
+storage:
+  type: "duckdb"
+  path: "/data/ca/ca.db"
+  pool_size: 10
+logging:
+  level: "info"
+  format: "json"
+server:
+  grpc_addr: "[::1]:50051"
+  max_concurrent_requests: 1000
+  request_timeout_seconds: 30

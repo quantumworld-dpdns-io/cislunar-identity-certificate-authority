@@ -1,0 +1,56 @@
+name: Security Scan
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  push:
+    branches: [main]
+    paths: ["**/Cargo.toml", "**/go.mod", "**/pyproject.toml"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Semgrep
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/rust p/python p/golang
+          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+  
+  sca:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Python SCA
+        working-directory: src/python
+        run: |
+          pip install pip-audit
+          pip-audit
+      - name: Rust SCA
+        uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Go SCA
+        working-directory: src/go
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}

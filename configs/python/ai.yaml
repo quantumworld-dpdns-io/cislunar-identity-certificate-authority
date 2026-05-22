@@ -1,0 +1,32 @@
+ca_api:
+  addr: "http://localhost:8080"
+  timeout: 30
+
+ollama:
+  host: "http://localhost:11434"
+  model: "llama3.2:3b"
+  embedding_model: "nomic-embed-text"
+  timeout: 60
+
+vector_store:
+  type: "chroma"
+  chroma:
+    host: "localhost"
+    port: 8000
+    collection: "cislunar-identities"
+  lancedb:
+    uri: "/data/lancedb"
+
+analytics:
+  duckdb:
+    path: "/data/ca/analytics.db"
+
+observability:
+  weave:
+    project: "cislunar-ca"
+    enabled: true
+
+mcp:
+  server:
+    port: 8001
+    name: "cislunar-ca-mcp"
