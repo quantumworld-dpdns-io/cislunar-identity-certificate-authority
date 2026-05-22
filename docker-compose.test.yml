@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  test-runner:
+    build:
+      context: .
+      dockerfile: docker/python/Dockerfile
+    command: >
+      sh -c "
+        pip install robotframework robotframework-requests robotframework-sshlibrary &&
+        robot --outputdir /reports /app/tests/security/robot/tests/
+      "
+    volumes:
+      - ./tests:/app/tests
+      - test-reports:/reports
+    depends_on:
+      ca-api:
+        condition: service_healthy
+    environment:
+      - CA_API_ADDR=http://ca-api:8080
+
+  ca-engine:
+    build:
+      context: .
+      dockerfile: docker/rust/Dockerfile
+    ports:
+      - "50051:50051"
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=localhost:50051"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  ca-api:
+    build:
+      context: .
+      dockerfile: docker/go/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      ca-engine:
+        condition: service_healthy
+
+  owasp-zap:
+    image: ghcr.io/zaproxy/zaproxy:stable
+    command: >
+      zap.sh -cmd -quickurl http://ca-api:8080
+      -quickout /zap/reports/zap-report.html
+    volumes:
+      - test-reports:/zap/reports
+    depends_on:
+      ca-api:
+        condition: service_healthy
+
+volumes:
+  test-reports:
