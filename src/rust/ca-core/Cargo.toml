@@ -1,0 +1,24 @@
+[package]
+name = "ca-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ca-types = { path = "../ca-types" }
+ca-crypto = { path = "../ca-crypto" }
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tonic.workspace = true
+prost.workspace = true
+tracing.workspace = true
+anyhow.workspace = true
+chrono.workspace = true
+uuid.workspace = true
+duckdb.workspace = true
+arrow.workspace = true
+parquet.workspace = true
+async-trait = "0.1"

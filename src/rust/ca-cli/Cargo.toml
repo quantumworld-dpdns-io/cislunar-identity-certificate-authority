@@ -1,0 +1,22 @@
+[package]
+name = "ca-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "ca-cli"
+path = "src/main.rs"
+
+[dependencies]
+ca-types = { path = "../ca-types" }
+ca-crypto = { path = "../ca-crypto" }
+ca-core = { path = "../ca-core" }
+clap.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+chrono.workspace = true
