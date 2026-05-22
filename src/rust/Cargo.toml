@@ -1,0 +1,39 @@
+[workspace]
+resolver = "2"
+members = [
+    "ca-types",
+    "ca-crypto",
+    "ca-core",
+    "ca-cli",
+    "ca-grpc",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/quantumworld-dpdns-io/cislunar-identity-certificate-authority"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive", "serde_derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+thiserror = "2"
+tokio = { version = "1", features = ["full"] }
+tonic = "0.12"
+prost = "0.13"
+prost-types = "0.13"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+base64 = "0.22"
+hex = "0.4"
+sha2 = "0.10"
+rand = "0.8"
+zeroize = { version = "1", features = ["derive"] }
+arrow = { version = "53", features = ["prettyprint"] }
+parquet = "53"
+duckdb = { version = "1", git = "https://github.com/duckdb/duckdb-rs" }
