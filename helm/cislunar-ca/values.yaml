@@ -1,0 +1,65 @@
+global:
+  environment: production
+  imagePullPolicy: Always
+
+ca-engine:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: cislunar-ca/engine
+    tag: latest
+  service:
+    port: 50051
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+  storage:
+    size: 10Gi
+    className: standard
+
+ca-api:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: cislunar-ca/api
+    tag: latest
+  service:
+    port: 8080
+  ingress:
+    enabled: true
+    host: ca.cislunar.local
+    tls: true
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+ca-ai:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: cislunar-ca/ai
+    tag: latest
+  service:
+    port: 8000
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "2000m"
+
+monitoring:
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true
+    dashboards: true
