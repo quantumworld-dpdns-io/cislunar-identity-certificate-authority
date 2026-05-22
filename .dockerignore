@@ -1,0 +1,35 @@
+# Git
+.git
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Build artifacts
+target/
+dist/
+build/
+__pycache__/
+*.pyc
+*.class
+
+# Dependencies
+node_modules/
+vendor/
+.venv/
+
+# Environment
+.env
+.env.*
+
+# Documentation
+*.md
+LICENSE
+
+# CI
+.github/
