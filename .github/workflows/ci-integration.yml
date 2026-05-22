@@ -1,0 +1,29 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build services
+        run: docker compose build
+      - name: Start services
+        run: docker compose up -d
+      - name: Wait for services
+        run: sleep 15
+      - name: Check health
+        run: |
+          curl -f http://localhost:8080/health || exit 1
+      - name: Test certificate lifecycle
+        run: |
+          curl -X POST http://localhost:8080/api/v1/certificates/issue \
+            -H "Content-Type: application/json" \
+            -d '{"subject":"test.cislunar.local","key_type":"ecdsa-p256","validity_days":365,"profile":"default"}'
+      - name: Stop services
+        run: docker compose down
