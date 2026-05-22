@@ -1,0 +1,17 @@
+apiVersion: v2
+name: cislunar-ca
+description: Cislunar Identity Certificate Authority
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+dependencies:
+  - name: ca-engine
+    version: 0.1.0
+    condition: ca-engine.enabled
+  - name: ca-api
+    version: 0.1.0
+    condition: ca-api.enabled
+  - name: ca-ai
+    version: 0.1.0
+    condition: ca-ai.enabled
